@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
 
-    steps:
+        steps:
     - uses: actions/checkout@v2
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'
+
+    - name: Install Firebase CLI
+      run: npm install -g firebase-tools
 
     - name: Install Dependencies
       run: cd front-end && npm install
@@ -26,8 +29,8 @@ jobs:
       run: cd front-end && npm run build
 
     - name: Deploy to Firebase
-      uses: w9jds/firebase-action@master
-      with:
-        args: deploy --only hosting
+      run: |
+        cd front-end
+        firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
